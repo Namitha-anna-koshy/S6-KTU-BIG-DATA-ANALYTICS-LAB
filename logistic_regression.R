@@ -1,19 +1,24 @@
 #Implement logistic regression using r
 
-data(iris)
+data=mtcars
+data$am=factor(data$am,labels=c('Automatic','Manual'))
+model = glm(am~mpg+hp,data=data,family='binomial')
+summary(model)
+data$predicted_prob=predict(model,type = 'response')
+data$predicted_class = ifelse(data$predicted_prob>0.5,'Manual','Automatic')
+conf_matrix=table(Actual=data$am,Predicted=data$predicted_class)
+print(conf_matrix)
+accuracy=sum(diag((conf_matrix))/sum(conf_matrix))
+precision=conf_matrix['Manual','Manual']/sum(conf_matrix[,'Manual'])
+recall=conf_matrix['Manual','Manual']/sum(conf_matrix['Manual',])
 
-iris_bin <- subset(iris, Species %in% c("setosa", "versicolor"))
+cat('Accuracy = ',accuracy)
+cat('\nPrecision = ',precision)
+cat('\nRecall = ',recall)
 
-iris_bin$target <- ifelse(iris_bin$Species == "versicolor", 1, 0)
+plot(data$mpg,data$predicted_prob,pch=19,col=ifelse(data$am=='Manual','blue','red'),xlab='mpg'
+     ,ylab='Probability of manual transmission',main='Logistic Regression')
+curve(predict(model,data.frame(mpg=x,hp=mean(data$hp)),type = 'response'),from=min(data$mpg),
+      to=max(data$mpg),add=TRUE,col='green',lwd=2)
 
-model <- glm(target ~ Petal.Length, data = iris_bin, family = binomial)
-
-iris_bin <- iris_bin[order(iris_bin$Petal.Length), ]
-
-predicted_probs <- predict(model, type = "response")
-
-plot(iris_bin$Petal.Length, iris_bin$target, pch=19, col="blue",
-     xlab="Petal Length", ylab="Probability of Versicolor",
-     main="Logistic Regression (Iris)")
-lines(iris_bin$Petal.Length, predicted_probs, col="red", lwd=2)
 
