@@ -20,3 +20,10 @@ plot(iris$Sepal.Length, iris$Petal.Length,
      col = "blue",
      pch = 19)
 abline(model, col = "red", lwd = 2)
+predictions=predict(model,newdata = iris)
+mse=mean(iris$Sepal.Length-predictions)^2
+rmse=sqrt(mse)
+rsq=summary(model)$r.squared
+print(mse)
+print(rmse)
+print(rsq)
